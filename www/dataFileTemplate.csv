@@ -1,0 +1,3 @@
+﻿yi,vi,ID,Paper.Number,Experiment.Number,Effect.Size.Number,Paper.and.Exp,Paper,Publication.Year,DOI,Article.Title,Journal,Design,N_Total,N_Intervention,N_Control,Begin.Selection.Factors,sf1,sf2,sf2,sf4,sf5,End.Selection.Factors,Begin.Selection.Numerics,sn1,sn2,End.Selection.Numerics,r,additional ignored columns
+,,1,,,,,,,,,,within,,,,,,,,,,,,,,,,
+,,2,,,,,,,,,,between,,,,,,,,,,,,,,,,
