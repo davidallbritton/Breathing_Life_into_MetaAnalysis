@@ -8,4 +8,4 @@ git clone https://github.com/davidallbritton/Breathing_Life_into_MetaAnalysis.gi
 Then open the file Breathing_Life_into_MetaAnalysis/ui.R in RStudio and click “Run App”
 
 David Allbritton
-December 18, 2023
+(December 18, 2023)
