@@ -2,41 +2,13 @@
 ################### A General Tool for BAYESIAN META-ANALYSIS #######################
 #######################################################################################
 
-###################   Shiny App v.0.9.4 2023.12.18  UI ####################################
-
-
-# Load required packages and source helper functions #----
-library(purrr)
-library(metafor)
-library(readxl)
-library(writexl)
-library(tools)
-library(shiny)
-library(bayesmeta)
-library(cowplot)
-library(dplyr)
-library(DT)
-library(data.table)
-library(esc)
-library(ggplot2)
-library(MAd)
-library(readr)
-library(R.rsp)
-library(shinyBS)
-library(shinycssloaders)
-library(shinythemes)
-library(stringr)
-library(tidyr)
-library(xtable)
-library(shinyalert)
-library(shinyjs)
-
-source("HelperFunctions.R")
-source("effect_sizes.R")
-#----
+###################   Shiny App v.0.9.5 2023.12.26  UI ###################################
 
 # Define UI
 ui <- fluidPage(theme = shinytheme("cosmo"),
+                tags$head(
+                  tags$meta(charset = "UTF-8")
+                ),
                 useShinyjs(),
                 titlePanel(title = div("A General Tool for BAYESIAN META-ANALYSIS"),
                            windowTitle = "A General Tool for BAYESIAN META-ANALYSIS"),
@@ -188,7 +160,15 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  printButton,
                                  h3("Welcome to the interactive Bayesian meta-analysis tool!"), 
                                  h4("Purpose:"),
-                                 p("The goals of this project are to make it easier to conduct a Bayesian meta-analysis and to encourage meta-analysts to present their work as living, evolving states of knowledge rather than as fixed snapshots of the literature at a single point in time and from a single point of view.  Meta-analysts can upload data and interactively set selection criteria and analysis parameters to produce either a frequentist or Bayesian meta-analytic estimate of an effect size along with standard statistics and graphs.  Other researchers can alter the parameters of the analysis or change which studies are included and observe the results."), 
+                                 p("The goals of this project are to make it easier to conduct a Bayesian meta-analysis", 
+                                   "and to encourage meta-analysts to present their work as living, evolving states of", 
+                                   "knowledge rather than as fixed snapshots of the literature at a single point in time", 
+                                   "and from a single point of view.  Meta-analysts can upload data and interactively set", 
+                                   "selection criteria and analysis parameters to produce either a frequentist or Bayesian", 
+                                   " meta-analytic estimate of an effect size along with standard statistics and graphs.  ", 
+                                   "Other researchers can alter the parameters of the analysis or change which studies are ", 
+                                   "included and observe the results.", "For reproducibility, R code or R markdown can be",
+                                   "downloaded for the selected analysis."), 
                                  h4("Updating Results:"),
                                  p('Except for the "Current data" tab, all results tabs are only updated when the "Re-calculate Meta-Analysis" button is pressed.', 
                                    "It is not necessary to re-calculate for each tab, however.  All tabs are updated after each recalculation."), 
@@ -307,7 +287,8 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  ),
                         tabPanel("Included Studies", printButton,
                           h4('This table lists all the studies included by the current selected criteria'),
-                          p('(updated only when "Re-Calculate Meta-Analysis" button is pressed)'),
+                          p('(updated only when "Re-Calculate Meta-Analysis" button on the left-side of the screen is pressed
+                            )'),
                           textOutput("warning"), br(),
                           DT::dataTableOutput("studies") %>% withSpinner(type = 6, color = "#3498DB"), br()
                           ),
@@ -325,10 +306,17 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  h4("Frequentist Forest plot with study weights and 95% confidence intervals:"),
                                  plotOutput("freq_forest") %>% withSpinner(type = 6, color = "#3498DB")
                         ),
+                        # tabPanel("Funnel plot",
+                        #          printButton,
+                        #          h4("Frequentist Funnel plot"),
+                        #          plotOutput("freq_funnel") %>% withSpinner(type = 6, color = "#3498DB")
+                        # ),
+                        
                         tabPanel("Funnel plot",
                                  printButton,
                                  h4("Frequentist Funnel plot"),
-                                 plotOutput("freq_funnel") %>% withSpinner(type = 6, color = "#3498DB")
+                                 plotOutput("freq_funnel") %>% withSpinner(type = 6, color = "#3498DB"),
+                                 verbatimTextOutput("funnel_code")  # Add this line to display the code
                         ),
                         
                         tabPanel("Bayesian Forest plot",  value = "bayesian_forest_plot",
@@ -397,10 +385,27 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  ),
                         tabPanel("Downloads", br(),
                           h4("Download Data and Results"),
-                          p("From the currently loaded data file and most recent calculations"), br(),
+                          p("From the currently loaded data file and most recent calculations"), 
                           uiOutput("downloadButtons")
                         ), #end of Downloads tab
                          #    
+                        tabPanel("R Code", br(),
+                                 p("Download an R script (.R file) or R markdown document (.Rmd file",
+                                   "that will reproduce the analyses and plots as currently calculated",
+                                   "by the app. The HelperFunctions file is also required, and the ",
+                                   "data file must also be in the same directory.  The default data file ",
+                                   "name is ",
+                                   '"originalData.xlsx"', "(which can be downloaded from the Downloads tab)",
+                                   "but the R code can be changed after downloading to accept any ",
+                                   ".xlsx, .xls, or .csv filename.",
+                                   "The R code that will be downloaded is displayed below.  If it is",
+                                   "not displayed or is not what you expected, you may need to click Re-Calculate."
+                                   ),
+                                 downloadButton("downloadCode", "Download R Code"),
+                                 downloadButton("downloadMarkdown", "Download R Markdown"),
+                                 downloadButton("download_HelperFunctions", "Download required helper functions"),
+                                 verbatimTextOutput("R_code_Output")
+                                 ),
                         hr()
                           ) #end of main tabs panel
                         )

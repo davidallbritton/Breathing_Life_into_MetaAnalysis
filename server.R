@@ -2,17 +2,25 @@
 ################### A General Tool for BAYESIAN META-ANALYSIS #################
 #######################################################################################
 
-################### Shiny App v.0.9.4 2023.12.18 SERVER ###################################
+################### Shiny App v.0.9.5 2023.12.26 SERVER ###################################
 # David Allbritton
 # https://github.com/davidallbritton/Breathing_life_into_meta-analysis
 #
-# Derived and adapted from https://vinzentwolf.shinyapps.io/taVNSHRVmeta/
+# Portions derived and adapted from https://vinzentwolf.shinyapps.io/taVNSHRVmeta/
 # as described in https://doi.org/10.1111/psyp.13933
 #
 ###################################################################################
 
+
 # Define server logic
 server <- function(input, output, session) {
+  
+  # Include code from other files.  Note that the "source" command
+  # must be inside the "server" function and "local = T" must be
+  # included so that the code is evaluated within the server envirnoment
+  # rather than in the user's workspace (global environment)
+  #
+  source("codeGenerator.R", local = T)  # for generating non-reactive R code to download for reproducibility
   
   # increase the allowable file size for uploads:
   options(shiny.maxRequestSize = 100 * 1024^2)
@@ -34,14 +42,14 @@ server <- function(input, output, session) {
   
   ###  initialize $previousPlots if the file exists on the server
   myrvs$previousPlots <- list()
-  if (file.exists("defaultPrecalculatedPlots.RDS")) {
-    myrvs$previousPlots <- readRDS("defaultPrecalculatedPlots.RDS")
+  if (file.exists("data/defaultPrecalculatedPlots.RDS")) {
+    myrvs$previousPlots <- readRDS("data/defaultPrecalculatedPlots.RDS")
   }
   
   ###  initialize $previousModels if the file exists on the server
   myrvs$previousModels <- list()
-  if (file.exists("defaultPrecalculatedModels.RDS")) {
-    myrvs$previousModels <- readRDS("defaultPrecalculatedModels.RDS")
+  if (file.exists("data/defaultPrecalculatedModels.RDS")) {
+    myrvs$previousModels <- readRDS("data/defaultPrecalculatedModels.RDS")
   }
 
   ### a reactive value that gets updated whenever myrvs$previousModels changes:
@@ -614,7 +622,7 @@ server <- function(input, output, session) {
   })  #### end of adding a study
   
   
-
+  
   # Create MA reactive for all outputs
   MA <- eventReactive(input$recalculateButton, {
     myrvs$triggerBma <- FALSE  ## reset the trigger for calculating bma()  
@@ -1119,11 +1127,12 @@ server <- function(input, output, session) {
     plot
   }, height = freq_forest_height)
   
-  
+
   # Funnel plot (frequentist)
   output$freq_funnel <- renderPlot({
     funnel(fma(), xlab = "Observed outcome")
   })
+
   
   ## observer to signal when the "recalculate" button can be activated
   observe({
@@ -1145,6 +1154,15 @@ server <- function(input, output, session) {
       shinyjs::enable("recalculateButton")
     }
   })
-  
+ 
+  # Download handler for the HelperFunctions.R file
+  output$download_HelperFunctions <- downloadHandler(
+    filename = function() {
+      "HelperFunctions.R"
+    },
+    content = function(file) {
+      file.copy("HelperFunctions.R", file)
+    }
+  )
   
 }  # end of server
