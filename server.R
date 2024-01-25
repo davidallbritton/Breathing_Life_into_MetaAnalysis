@@ -113,10 +113,55 @@ server <- function(input, output, session) {
       #
       if (file_extension %in% c("xlsx", "xls")) {
         df <- readxl::read_excel(file_path) %>% as.data.frame()
+        # make sure the numeric columns are of the correct type
+        start_col <- which(names(df) == "Begin.Selection.Numerics")
+        end_col <- which(names(df) == "End.Selection.Numerics")
+        # Check if both columns are found
+        if (length(start_col) == 0 || length(end_col) == 0) {
+          # Instead of stop(), use a Shiny-friendly method to show an error
+          showNotification("Start or end column not found in the dataframe", type = "error")
+          return()
+        }
+        # Convert columns from start to end into numeric
+        df[, start_col:end_col] <- lapply(df[, start_col:end_col], function(x) as.numeric(as.character(x)))
+        #
+        # List of column names to potentially convert to numeric
+        columns_to_convert <- c("Publication.Year", "N_Intervention", "N_Control", "N_Total")
+        # Loop through each column name
+        for (col in columns_to_convert) {
+          # Check if the column exists in the dataframe
+          if (col %in% names(df)) {
+            # Convert the column to numeric
+            df[[col]] <- as.numeric(as.character(df[[col]]))
+          }
+        }
+        #
       } else if (file_extension == "csv") {
         # The .csv should use UTF-8 encoding if there are non-ASCII characters
         # otherwise they can cause the app to crash.
         df <- readr::read_csv(file_path, show_col_types = FALSE)  %>% as.data.frame()
+        # make sure the numeric columns are of the correct type
+        start_col <- which(names(df) == "Begin.Selection.Numerics")
+        end_col <- which(names(df) == "End.Selection.Numerics")
+        # Check if both columns are found
+        if (length(start_col) == 0 || length(end_col) == 0) {
+          # Instead of stop(), use a Shiny-friendly method to show an error
+          showNotification("Start or end column not found in the dataframe", type = "error")
+          return()
+        }
+        # Convert columns from start to end into numeric
+        df[, start_col:end_col] <- lapply(df[, start_col:end_col], function(x) as.numeric(as.character(x)))
+        #
+        # List of column names to potentially convert to numeric
+        columns_to_convert <- c("Publication.Year", "N_Intervention", "N_Control", "N_Total")
+        # Loop through each column name
+        for (col in columns_to_convert) {
+          # Check if the column exists in the dataframe
+          if (col %in% names(df)) {
+            # Convert the column to numeric
+            df[[col]] <- as.numeric(as.character(df[[col]]))
+          }
+        }
       }
       #
       newrvs <- reformat.df(df)
