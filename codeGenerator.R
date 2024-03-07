@@ -7,8 +7,22 @@
 ########################################
 # David Allbritton
 # December 2023
-# v.0.9.5 2023.12.26
+# v.0.9.6 2024.03.06
 ########################################
+
+############### functions for generating the code ############
+escapeAndDQuote <- function(x) {  # replacement for dQuote for strings that contain double quotes
+  # First, escape internal double quotes
+  escaped <- gsub("\"", "\\\"", x, fixed = TRUE)
+  # Now wrap the string with double quotes
+  dquotedEscaped <- paste0("\"", escaped, "\"")
+  return(dquotedEscaped)
+}
+
+#  check_for_bad_chars -- in HelperFunctions.R
+
+##############################################################
+
 
 ## Print out initial static code that does not depend on app user input selections:
 ####### beginning of static code block
@@ -28,6 +42,7 @@ source("HelperFunctions.R")  # Functions from this file that are used:
                              # priorposteriorlikelihood.ggplot()
                              # tauprior.ggplot
                              # robustness
+                             # check_for_bad_chars
 
 ## load libraries
 # get  needed libraries from ui.R
@@ -78,6 +93,13 @@ df_as_uploaded <- read_data(input_file)
 newrvs <- reformat.df(df_as_uploaded)
 df <- newrvs$df  # reformatted for use in the analyses
 
+if(check_for_bad_chars(df)) {  
+  # Give a warning if the data contains newlines and other problematic characters
+  warning("Your datafile contains newlines, carriage returns, or other problematic characters. 
+          This probably will cause problems and the analysis produced here will not be 
+          identical to what you produced interactively in the Shiny app.")
+}
+
 #'
 ####### end of static code block
 
@@ -102,12 +124,12 @@ N_Intervention <- c(%s, %s)
 included <- %s
 aggregation <- '%s'
 #",
-                                paste("c(", paste(dQuote(myrvs$Variable.Factor.Names), collapse = ", "), ")", sep=""),
-                                paste("c(", paste(dQuote(myrvs$Variable.Numeric.Names), collapse = ", "), ")", sep=""),
-                                paste("c(", paste(dQuote(input$Design), collapse = ", "), ")", sep=""),
+                                paste("c(", paste(escapeAndDQuote(myrvs$Variable.Factor.Names), collapse = ",\n "), ")", sep=""),
+                                paste("c(", paste(escapeAndDQuote(myrvs$Variable.Numeric.Names), collapse = ",\n "), ")", sep=""),
+                                paste("c(", paste(escapeAndDQuote(input$Design), collapse = ", "), ")", sep=""),
                                 input$Publication.Year[1], input$Publication.Year[2],
                                 input$N_Intervention[1],  input$N_Intervention[2],
-                                paste("c(", paste(dQuote(enc2utf8(input$included)), collapse = ", "), ")", sep=""),
+                                paste("c(", paste(escapeAndDQuote(enc2utf8(input$included)), collapse = ",\n "), ")", sep=""),
                                 input$aggregation
 
   )
@@ -122,11 +144,15 @@ Variable.Factors.selected <- list() ")
   #
   # loop over the variable factor names to write code
   for (varName in myrvs$Variable.Factor.Names)  {
-    keepValues <- input[[varName]]
+    keepValues <- input[[varName]]   
+    print("str(keepValues)****")  # debugging
+    print(str(keepValues))  # debugging
+    print("keepValues******")  # debugging
+    print(keepValues)  # debugging
     someCode <- sprintf("
 Variable.Factors.selected[[%s]] <- c(%s) ",
-                        dQuote(varName),
-                        paste(dQuote(keepValues), collapse = ", ")
+                        escapeAndDQuote(varName),
+                        paste(escapeAndDQuote(keepValues), collapse = ",\n ") 
     )
     code_for_MA <- paste0(code_for_MA, someCode)
   }
@@ -145,8 +171,8 @@ Variable.Numerics.selected <- list() ")
     keepValues <- input[[varName]]
     someCode <- sprintf("
 Variable.Numerics.selected[[%s]] <- c(%s) ",
-                        dQuote(varName),
-                        paste(dQuote(keepValues), collapse = ", ")
+                        escapeAndDQuote(varName),
+                        paste(keepValues, collapse = ", ")
     )
     code_for_MA <- paste0(code_for_MA, someCode)
   }

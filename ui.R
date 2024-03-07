@@ -1,8 +1,9 @@
 #######################################################################################
-################### A General Tool for BAYESIAN META-ANALYSIS #######################
+################### A General Tool for Living Meta-Analysis #######################
 #######################################################################################
+# v.0.9.6 2024.03.06
 
-###################   Shiny App v.0.9.5 2023.12.26  UI ###################################
+###################   Shiny App UI ###################################
 
 # Define UI
 ui <- fluidPage(theme = shinytheme("cosmo"),
@@ -10,8 +11,8 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                   tags$meta(charset = "UTF-8")
                 ),
                 useShinyjs(),
-                titlePanel(title = div("A General Tool for BAYESIAN META-ANALYSIS"),
-                           windowTitle = "A General Tool for BAYESIAN META-ANALYSIS"),
+                titlePanel(title = div("A General Tool for Living Meta-Analysis"),
+                           windowTitle = "A General Tool for Living Meta-Analysis"),
                 sidebarLayout(
                   sidebarPanel(fluidRow(
                     uiOutput("currentDataFile"),
@@ -158,9 +159,9 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                       tabsetPanel(id = "mainTabset",
                         tabPanel("Explanation", 
                                  printButton,
-                                 h3("Welcome to the interactive Bayesian meta-analysis tool!"), 
+                                 h3("Welcome to the interactive living meta-analysis tool!"), 
                                  h4("Purpose:"),
-                                 p("The goals of this project are to make it easier to conduct a Bayesian meta-analysis", 
+                                 p("The goals of this project are to make it easier to conduct an updatable meta-analysis", 
                                    "and to encourage meta-analysts to present their work as living, evolving states of", 
                                    "knowledge rather than as fixed snapshots of the literature at a single point in time", 
                                    "and from a single point of view.  Meta-analysts can upload data and interactively set", 

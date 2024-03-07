@@ -1,7 +1,7 @@
 #######################################################################################
 ################### A General Tool for BAYESIAN META-ANALYSIS #######################
 #######################################################################################
-#  Shiny App v.0.9.5 2023.12.26 
+# v.0.9.6 2024.03.06
 
 ################### Helper functions #################################################
 
@@ -332,4 +332,103 @@ checkOldPlots <- function(listPrevious, MA, tauprior, mupriorsd, scaletau, robus
     }
   }
   if(isTruthy(return_robustggplot)) return_robustggplot else FALSE
+}
+
+########## Functions for generating R code
+
+removeBadCharacters <- function(df) { # remove problematic characters, like " \r \n 
+  #    from a dataframe
+  # Define the characters to remove: carriage returns, newlines, tab, form feed
+  chars_to_remove <- c("\\r", "\\n", "\\t",  "\\f")
+  pattern <- paste(chars_to_remove, collapse = "|")
+  #
+  # Apply the removal operation only to character and factor columns
+  df_clean <- as.data.frame(lapply(df, function(column) {
+    # Store the original type for later use
+    original_type <- class(column)
+    #
+    # Convert factor to character to process it
+    column_as_char <- as.character(column)
+    # Remove the unwanted characters
+    column_cleaned <- gsub(pattern, "", column_as_char)
+    #
+    # If the original column was a factor, convert it back
+    if (original_type == "factor") {
+      column_cleaned <- factor(column_cleaned)
+    }
+    #
+    # Return the cleaned column
+    return(column_cleaned)
+  }), stringsAsFactors = FALSE) # Keeps strings as characters unless explicitly converted back to factors
+  #
+  return(df_clean)
+}
+
+removeBadCharactersFromString <- function(inputString) {  # remove problematic characters, like " \r \n
+  # Define the characters to remove: carriage returns, newlines, tabs, and form feeds
+  chars_to_remove <- c("\r", "\n", "\t",  "\f")
+  pattern <- paste(chars_to_remove, collapse = "|")
+  #
+  # Remove the defined characters from the input string
+  cleanedString <- gsub(pattern, "", inputString)
+  #
+  return(cleanedString)
+}
+
+replaceBadCharacters  <- function(df) { # replace problematic characters, like " \r \n with a space
+  #    in a dataframe
+  # Define the characters to remove: carriage returns, newlines, tab, form feed
+  chars_to_remove <- c("\\r", "\\n", "\\t", "\\f")
+  pattern <- paste(chars_to_remove, collapse = "|")
+  #
+  # Apply the removal operation only to character and factor columns
+  df_clean <- as.data.frame(lapply(df, function(column) {
+    # Store the original type for later use
+    original_type <- class(column)
+    #
+    # Convert factor to character to process it
+    column_as_char <- as.character(column)
+    # Remove the unwanted characters
+    column_cleaned <- gsub(pattern, " ", column_as_char)
+    #
+    # If the original column was a factor, convert it back
+    if (original_type == "factor") {
+      column_cleaned <- factor(column_cleaned)
+    }
+    #
+    # Return the cleaned column
+    return(column_cleaned)
+  }), stringsAsFactors = FALSE) # Keeps strings as characters unless explicitly converted back to factors
+  #
+  return(df_clean)
+}
+
+replaceBadCharactersFromString <- function(inputString) {  # replace problematic characters, like " \r \n with a space
+  # Define the characters to remove: carriage returns, newlines, tabs, and form feeds
+  chars_to_remove <- c("\r", "\n", "\t",  "\f")
+  pattern <- paste(chars_to_remove, collapse = "|")
+  #
+  # Remove the defined characters from the input string
+  cleanedString <- gsub(pattern, " ", inputString)
+  #
+  return(cleanedString)
+}
+
+check_for_bad_chars <- function(df) {   # check for newlines and other problematic characters
+  # Define the pattern to search for bad characters
+  # \r - carriage return, \n - newline, \t - tab, \f - form feed
+  pattern <- "[\r\n\t\f]"
+  #
+  # Use apply to check each element of the dataframe
+  contains_special_chars <- apply(df, c(1, 2), function(x) {
+    # Check if the current element matches the pattern
+    return(grepl(pattern, x))
+  })
+  #
+  # If any element contains special (bad) characters, return TRUE
+  if (any(contains_special_chars)) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
 }

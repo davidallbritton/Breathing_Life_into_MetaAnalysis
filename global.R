@@ -1,4 +1,5 @@
-# v.0.9.5 2023.12.26
+################### A General Tool for Living Meta-Analysis #################
+# v.0.9.6 2024.03.06
 #----
 # default data file for initial display, before user uploads their own data file:
 load(file = "data/2023updatedData.Rda")             # loads a dataframe called "df"
