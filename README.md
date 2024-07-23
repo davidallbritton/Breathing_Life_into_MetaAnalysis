@@ -1,6 +1,9 @@
 # Breathing_Life_into_MetaAnalysis
 Shiny app for updateable meta-analysis
 
+https://osf.io/3zxh2/
+https://doi.org/10.5334/joc.389
+
 To run this Shiny app in R on your own computer, paste the following command into the “terminal” tab of RStudio:
 
 git clone https://github.com/davidallbritton/Breathing_Life_into_MetaAnalysis.git
