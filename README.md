@@ -3,6 +3,7 @@ Shiny app for updateable meta-analysis
 
 https://osf.io/3zxh2/
 
+Allbritton, D., Gómez, P., Angele, B., Vasilev, M., & Perea, M. (2024). Breathing Life Into Meta-Analytic Methods. Journal of Cognition, 7(1): 61, pp. 1–17. DOI:
 https://doi.org/10.5334/joc.389
 
 To run this Shiny app in R on your own computer, paste the following command into the “terminal” tab of RStudio:
